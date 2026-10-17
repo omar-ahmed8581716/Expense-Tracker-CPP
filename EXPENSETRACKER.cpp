@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -100,7 +101,7 @@ string ReadDate()
 string MonthName(short Month)
 {
     string MonthName[13] = { "" ,"January" , "February" , "March" , "April" ,
-        "May" , "June" , "July" , "August" , "September" , 
+        "May" , "June" , "July" , "August" , "September" ,
         "October" , "November" , "December"};
 
     return MonthName[Month];
@@ -286,7 +287,7 @@ void SaveTransactionsToFile(string FileName,string Line)
 
     if (MyFile.is_open())
     {
-        MyFile << Line << endl;   
+        MyFile << Line << endl;
         MyFile.close();
     }
 }
@@ -374,7 +375,7 @@ short ReadID(string Message)
 
 bool IsTransactionFindID(short ID, stTransaction& Transaction , const  vector<stTransaction>& vTransaction)
 {
-  
+
     for (const stTransaction& Tran : vTransaction)
     {
         if (ID == Tran.ID)
@@ -402,10 +403,19 @@ void PrintTransactionDetails(stTransaction Transaction)
     cout << "+--------------------------------------------------+\n";
 }
 
+void PrintOneTransaction(stTransaction Tran)
+{
+    cout << "| " << left << setw(5) << Tran.ID;
+    cout << "| " << left << setw(12) << Tran.Date;
+    cout << "| " << left << setw(20) << Tran.Category;
+    cout << "| " << left << setw(10) << Tran.Amount;
+    cout << "| " << left << setw(8) << TransactionTypeToString(Tran.TransactionType) << "|";
+}
+
 double HighestExpense(vector<stTransaction>& vTransaction)
-{                                                      
+{
     double Highest = 0;
-                                                       
+
     for (stTransaction& Transaction : vTransaction)
     {
         if (Transaction.TransactionType == enTransactionType::Expense)
@@ -425,13 +435,13 @@ double LowestExpense(vector<stTransaction>& vTransaction)
 
     for (stTransaction& Transaction : vTransaction)
     {
-        if (Transaction.TransactionType == enTransactionType::Expense) // 50 
+        if (Transaction.TransactionType == enTransactionType::Expense) // 50
         {
             Lowest = Transaction.Amount;
             break;
         }
     }
-   
+
     for (stTransaction& Transaction : vTransaction)
     {
         if (Transaction.TransactionType == enTransactionType::Expense)
@@ -537,6 +547,30 @@ short ReadYear()
     return Year;
 }
 
+void ShowStatistcMenu(string Prosses)
+{
+    cout << "\n";
+    cout << "+--------------------------------------------+\n";
+    cout << "|             "<<Prosses<<" Menu               | \n";
+    cout << "+--------------------------------------------+\n";
+    cout << "|   [1]  Specific Month                      |\n";
+    cout << "|   [2]  Specific Year                       |\n";
+    cout << "|   [3]  All Time                            |\n";
+    cout << "|   [4]  Back                                |\n";
+    cout << "+--------------------------------------------+\n";
+    cout << "\n";
+}
+
+void GoBackToStatistcMenu()
+{
+    cout << "\n Press any key to return to the Statistc Menu...";
+
+    system("pause>0");
+    ResetConsoleColor();
+}
+
+// ********* Get and Print Specific Month , Year Function *********
+
 vector<stTransaction>  GetTransactionOfSpecificMonth(short Month , short Year , const vector<stTransaction>& vTransaction )
 {
     vector<stTransaction> vSpecificMonth;
@@ -544,6 +578,7 @@ vector<stTransaction>  GetTransactionOfSpecificMonth(short Month , short Year , 
     for (const stTransaction& Tran : vTransaction)
     {
        vector<string> Date = SplitString(Tran.Date, "/");
+
        if (Date.size() >= 3)
        {
            short M = stoi(Date[1]);
@@ -558,7 +593,7 @@ vector<stTransaction>  GetTransactionOfSpecificMonth(short Month , short Year , 
     return vSpecificMonth;
 }
 
-void PrintTransactionOfSpecificMonth(vector<stTransaction>& vTransaction ,short Month , short Year)
+void PrintStatisitcsOfSpecificMonth(vector<stTransaction>& vTransaction ,short Month , short Year)
 {
     string NameOfMonth = MonthName(Month);
 
@@ -628,6 +663,35 @@ void PrintTransactionOfSpecificMonth(vector<stTransaction>& vTransaction ,short 
 
 }
 
+void PrintTransactionOfSpecificMonth(vector<stTransaction>& vTransaction, short Month, short Year)
+{
+    string NameOfMonth = MonthName(Month);
+
+    if (vTransaction.empty())
+    {
+        cout << "\n No Transactions found for the Month [" << NameOfMonth << " , " << Year << "] .\n";
+        return;
+    }
+
+    else
+    {
+        cout << "+----------------------------------------------------------------+\n";
+        cout << "|                    Transaction - "<<NameOfMonth<<" "<<Year<<"\t\t\t |";
+        cout << "\n+------+-------------+---------------------+-----------+---------+\n";
+        cout << "|  ID  |    Date     |     Category        |   Amount  |   Type  |\n";
+        cout << "+------+-------------+---------------------+-----------+---------+\n";
+
+        for (stTransaction& Tran : vTransaction)
+        {
+            PrintOneTransaction(Tran);
+            cout << endl;
+        }
+
+        cout << "+------+-------------+---------------------+-----------+---------+\n";
+    }
+
+}
+
 vector<stTransaction>  GetTransactionOfSpecificYear( short Year, const vector<stTransaction>& vTransaction)
 {
     vector<stTransaction> vSpecificYear;
@@ -645,7 +709,7 @@ vector<stTransaction>  GetTransactionOfSpecificYear( short Year, const vector<st
     return vSpecificYear;
 }
 
-void PrintTransactionOfSpecificYear(vector<stTransaction>& vTransaction, short Year)
+void PrintStatisitcsOfSpecificYear(vector<stTransaction>& vTransaction, short Year)
 {
 
     if (vTransaction.empty())
@@ -712,26 +776,31 @@ void PrintTransactionOfSpecificYear(vector<stTransaction>& vTransaction, short Y
 
 }
 
-void ShowStatistcMenu()
+void PrintTransactionOfSpecificYear(vector<stTransaction>& vTransaction, short Year)
 {
-    cout << "\n";
-    cout << "+--------------------------------------------+\n";
-    cout << "|             Statistc Menu                  |\n";
-    cout << "+--------------------------------------------+\n";
-    cout << "|   [1]  Specific Month                      |\n";
-    cout << "|   [2]  Specific Year                       |\n";
-    cout << "|   [3]  All Time                            |\n";
-    cout << "|   [4]  Back                                |\n";
-    cout << "+--------------------------------------------+\n";
-    cout << "\n";
-}
 
-void GoBackToStatistcMenu()
-{
-    cout << "\n Press any key to return to the Statistc Menu...";
+    if (vTransaction.empty())
+    {
+        cout << "\n No Transactions found for the year [" << Year << "] \n";
+    }
 
-    system("pause>0");
-    ResetConsoleColor();
+    else
+    {
+        cout << "+----------------------------------------------------------------+\n";
+        cout << "|                      Transaction - " << Year << "\t\t\t |";
+        cout << "\n+------+-------------+---------------------+-----------+---------+\n";
+        cout << "|  ID  |    Date     |     Category        |   Amount  |   Type  |\n";
+        cout << "+------+-------------+---------------------+-----------+---------+\n";
+
+        for (stTransaction& Tran : vTransaction)
+        {
+            PrintOneTransaction(Tran);
+            cout << endl;
+        }
+
+        cout << "+------+-------------+---------------------+-----------+---------+\n";
+    }
+
 }
 
 // **************** Add Income Function *****************
@@ -761,7 +830,7 @@ void AddIncome(vector<stTransaction> &vTransaction)
         cout << "\n Transaction Added Successfuly . ";
         cout << "\n The ID of this Transaction is : " << ID << endl;
     }
-   
+
     else
     {
         cout << "\n Transaction Cancelled, Nothing was saved.\n";
@@ -824,34 +893,6 @@ void AddExpense(vector<stTransaction>& vTransaction)
     }
 }
 
-// **************** Showeing Function *****************
-
-void PrintOneTransaction(stTransaction Tran)
-{ 
-    cout << "| " << left << setw(5)  << Tran.ID ;
-    cout << "| " << left << setw(12) << Tran.Date;
-    cout << "| " << left << setw(20) << Tran.Category;
-    cout << "| " << left << setw(10) << Tran.Amount;
-    cout << "| " << left << setw(8)  << TransactionTypeToString(Tran.TransactionType) <<"|";
-}
-
-void PrintAllTransaction(vector<stTransaction> &vTransaction)
-{
-    cout << "\n\t-+-+- Transaction List [" << vTransaction.size() << "] Transaction  +-+-+\n";
-    cout << "\n+------+-------------+---------------------+-----------+---------+\n";
-    cout << "|  ID  |    Date     |     Category        |   Amount  |   Type  |\n";
-    cout << "+------+-------------+---------------------+-----------+---------+\n";
-
-    for (stTransaction& Tran : vTransaction)
-    {
-        PrintOneTransaction(Tran);
-        cout << endl;
-    }
-
-    cout << "+------+-------------+---------------------+-----------+---------+\n";
-
-}
-
 // **************** Finding Function *****************
 
 void FindTransactionByID(vector<stTransaction>& vTransaction)
@@ -871,6 +912,25 @@ void FindTransactionByID(vector<stTransaction>& vTransaction)
 
     system("color 2F");
     PrintTransactionDetails(Transaction);
+}
+
+// **************** Showeing Function *****************
+
+void PrintAllTransaction(vector<stTransaction>& vTransaction)
+{
+    cout << "\n\t-+-+- Transaction List [" << vTransaction.size() << "] Transaction  +-+-+\n";
+    cout << "\n+------+-------------+---------------------+-----------+---------+\n";
+    cout << "|  ID  |    Date     |     Category        |   Amount  |   Type  |\n";
+    cout << "+------+-------------+---------------------+-----------+---------+\n";
+
+    for (stTransaction& Tran : vTransaction)
+    {
+        PrintOneTransaction(Tran);
+        cout << endl;
+    }
+
+    cout << "+------+-------------+---------------------+-----------+---------+\n";
+
 }
 
 // **************** Deleteing Function *****************
@@ -936,7 +996,7 @@ bool DeleteTransaction(vector<stTransaction>& vTransaction)
         MarkForDeleteByID(ID, vTransaction);
         RewriteTransactionsFile(vTransaction);
         system("color 2F");
-        vTransaction = LoadDateFromFile(FileName); // To Refresh Clients 
+        vTransaction = LoadDateFromFile(FileName); // To Refresh Clients
         cout << "\n Transaction Deleted Sccussfuly . ";
         return true;
     }
@@ -990,7 +1050,7 @@ void ShowStatistics(vector<stTransaction> & vTransaction)
     cout << "|                SHOW STATISITCS                   |";
     cout << "\n+ -------------------------------------------------+\n";
 
-    cout << "\n\n+--------------------------------------------------+\n";
+    cout << "\n+--------------------------------------------------+\n";
     cout << "|                 Transaction                      |\n";
     cout << "|                                                  |\n";
     cout << "|  Total Transactions       : "
@@ -1004,7 +1064,7 @@ void ShowStatistics(vector<stTransaction> & vTransaction)
         << left << setw(20)
         << NumberOfExpenseTransaction(vTransaction) << " |\n";
 
-    cout << "+--------------------------------------------------+\n"; 
+    cout << "+--------------------------------------------------+\n";
     cout << "|                Financial Summary                 |\n";
     cout << "|                                                  |\n";
     cout << "|  Total Income             : "
@@ -1048,7 +1108,7 @@ void StatisticsExcuation()
     do
     {
         system("cls");
-        ShowStatistcMenu();
+        ShowStatistcMenu(" Statistics");
         Option = (enStatistics)ReadOptionFromMenu(1,4);
         vector<stTransaction> vTransaction = LoadDateFromFile(FileName);
 
@@ -1058,19 +1118,28 @@ void StatisticsExcuation()
         {
             system("cls");
 
+            cout << "\n+ -------------------------------------------------+\n";
+            cout << "|                Specific Month                    |";
+            cout << "\n+ -------------------------------------------------+\n";
+
           short Month = ReadMonth();
           short Year  = ReadYear();
           vTransaction = GetTransactionOfSpecificMonth(Month, Year, vTransaction);
-          PrintTransactionOfSpecificMonth(vTransaction, Month, Year);
+          PrintStatisitcsOfSpecificMonth(vTransaction, Month, Year);
           GoBackToStatistcMenu();
             break;
         }
         case enStatistics::SpecificYear:
         {
             system("cls");
+
+            cout << "\n+ -------------------------------------------------+\n";
+            cout << "|                Specific Year                     |";
+            cout << "\n+ -------------------------------------------------+\n";
+
             short Year = ReadYear();
            vTransaction = GetTransactionOfSpecificYear(Year, vTransaction);
-            PrintTransactionOfSpecificYear(vTransaction,Year);
+            PrintStatisitcsOfSpecificYear(vTransaction,Year);
             GoBackToStatistcMenu();
             break;
         }
@@ -1086,8 +1155,69 @@ void StatisticsExcuation()
             system("cls");
             break;
         }
-        
+
         }
+
+    } while (Option != enStatistics::Back);
+}
+
+void TransactionExcuation()
+{
+    enStatistics Option;
+
+    do
+    {
+        system("cls");
+        ShowStatistcMenu("Transaction");
+        Option = (enStatistics)ReadOptionFromMenu(1, 4);
+        vector<stTransaction> vTransaction = LoadDateFromFile(FileName);
+
+        switch (Option)
+        {
+        case enStatistics::SpecificMonth:
+        {
+            system("cls");
+
+            cout << "\n+ -------------------------------------------------+\n";
+            cout << "|                Specific Month                    |";
+            cout << "\n+ -------------------------------------------------+\n";
+
+            short Month = ReadMonth();
+            short Year = ReadYear();
+            vTransaction = GetTransactionOfSpecificMonth(Month, Year, vTransaction);
+            PrintTransactionOfSpecificMonth(vTransaction, Month, Year);
+            GoBackToStatistcMenu();
+            break;
+        }
+        case enStatistics::SpecificYear:
+        {
+            system("cls");
+
+            cout << "\n+ -------------------------------------------------+\n";
+            cout << "|                Specific Year                     |";
+            cout << "\n+ -------------------------------------------------+\n";
+
+            short Year = ReadYear();
+            vTransaction = GetTransactionOfSpecificYear(Year, vTransaction);
+            PrintTransactionOfSpecificYear(vTransaction, Year);
+            GoBackToStatistcMenu();
+            break;
+        }
+        case enStatistics::AllTime:
+        {
+            system("cls");
+            PrintAllTransaction(vTransaction);
+            GoBackToStatistcMenu();
+            break;
+        }
+        case enStatistics::Back:
+        {
+            system("cls");
+            break;
+        }
+
+        }
+
     } while (Option != enStatistics::Back);
 }
 
@@ -1121,8 +1251,7 @@ void programExcuation()
         case enTransaction::enshowAllTransaction:
         {
             system("cls");
-            PrintAllTransaction(vTransaction);
-            GoBackToMainMenu();
+            TransactionExcuation();
             break;
         }
         case enTransaction::enFindTransaction:
@@ -1175,13 +1304,11 @@ void StartProgram()
 }
 
 
-
 int main()
 {
 
-    StartProgram();
-
-  
+   StartProgram();
+    
 
     return 0;
 }
